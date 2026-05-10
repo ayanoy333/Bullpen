@@ -1,0 +1,104 @@
+{% load static %}
+<!doctype html>
+<html>
+  <head>
+    <link rel="stylesheet" href="{% static 'players/css/style.css' %}" />
+    <title>防御率計算</title>
+  </head>
+  <body>
+    <h1>防御率計算・成績更新</h1>
+    <a
+      href="{% url 'home' %}"
+      class="btn"
+      style="background-color: #666; margin-bottom: 20px"
+      >← ホームへ戻る</a
+    >
+
+    <div class="card">
+      <h3>1. 成績を入力して計算</h3>
+      投球回:
+      <input
+        type="number"
+        id="calc_ip"
+        step="0.1"
+        oninput="runCalc()"
+        placeholder="例: 6.1"
+      />
+      自責点:
+      <input
+        type="number"
+        id="calc_er"
+        oninput="runCalc()"
+        placeholder="例: 2"
+      />
+      <p class="result-display">
+        計算後の防御率:
+        <span id="era_result" style="color: #d90429; font-size: 1.5em">--</span>
+      </p>
+    </div>
+
+    <div class="card">
+      <h3>2. 反映させる選手を選択</h3>
+
+      <form method="GET" class="search-box">
+        <input
+          type="text"
+          name="q"
+          value="{{ query|default:'' }}"
+          placeholder="選手名で検索..."
+        />
+        <button type="submit" class="btn">検索</button>
+      </form>
+
+      <form method="POST">
+        {% csrf_token %}
+        <input type="hidden" name="innings_pitched" id="hidden_ip" />
+        <input type="hidden" name="earned_runs" id="hidden_er" />
+
+        <select
+          name="pitcher_id"
+          required
+          size="5"
+          style="
+            width: 100%;
+            max-width: 400px;
+            margin-top: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+          "
+        >
+          <option value="">選手を選択してください</option>
+          {% for p in pitchers %}
+          <option value="{{ p.pk }}">
+            {{ p.name }} ({{ p.get_team_display }})
+          </option>
+          {% endfor %}
+        </select>
+
+        <br /><br />
+        <button type="submit" class="btn" style="background-color: #28a745">
+          計算結果を選択した選手に反映する
+        </button>
+      </form>
+    </div>
+
+    <script>
+      function runCalc() {
+        const ip = document.getElementById("calc_ip").value;
+        const er = document.getElementById("calc_er").value;
+        if (ip > 0) {
+          const era = (er * 9) / ip;
+          document.getElementById("era_result").innerText = era.toFixed(2);
+          document.getElementById("hidden_ip").value = ip;
+          document.getElementById("hidden_er").value = er;
+        }
+      }
+    </script>
+  </body>
+  <div class="nav-right">
+    <form action="{% url 'logout' %}" method="post" style="display: inline">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-danger">ログアウト</button>
+    </form>
+  </div>
+</html>

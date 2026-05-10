@@ -1,0 +1,71 @@
+{% load static %}
+<!doctype html>
+<html>
+  <head>
+    <link rel="stylesheet" href="{% static 'players/css/style.css' %}" />
+    <title>Bullpen - ホーム</title>
+  </head>
+  <body>
+    <div class="nav-right">
+      <form action="{% url 'logout' %}" method="post" style="display: inline">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">ログアウト</button>
+      </form>
+    </div>
+
+    <div class="home-container">
+      <h1 class="hero-title">⚾ブルペン守るくん</h1>
+
+      <div class="menu-grid">
+        <a href="{% url 'pitcher_list' %}" class="menu-card">
+          <i>📋</i>
+          <span>ピッチャー一覧・登録</span>
+        </a>
+        <a href="{% url 'calculator' %}" class="menu-card">
+          <i>📊</i>
+          <span>防御率計算ツール</span>
+        </a>
+      </div>
+
+      <div
+        class="card"
+        style="
+          margin-top: 40px;
+          width: 100%;
+          max-width: 800px;
+          text-align: left;
+        "
+      >
+        <h3>⭐ お気に入り選手</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>投手名</th>
+              <th>球団</th>
+              <th>投球回</th>
+              <th>勝-負</th>
+              <th>防御率</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for p in favorite_pitchers %}
+            <tr>
+              <td>{{ p.name }}</td>
+              <td>{{ p.get_team_display }}</td>
+              <td>{{ p.innings_pitched }}</td>
+              <td>{{ p.wins }}-{{ p.losses }}</td>
+              <td><strong>{{ p.era }}</strong></td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="5" style="text-align: center">
+                お気に入りの選手はいません。一覧から⭐を付けてみましょう！
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,24 @@
+{% load static %}
+<!doctype html>
+<html>
+  <head>
+    <link rel="stylesheet" href="{% static 'players/css/style.css' %}" />
+    <title>ログイン - BULLPEN</title>
+  </head>
+  <body>
+    <div class="home-container">
+      <div class="card" style="width: 100%; max-width: 400px">
+        <h1 style="border: none">🔐 LOGIN</h1>
+        <form method="post">
+          {% csrf_token %}
+          <div style="text-align: left; margin-bottom: 20px">
+            {{ form.as_p }}
+          </div>
+          <button type="submit" class="btn" style="width: 100%">
+            ログイン
+          </button>
+        </form>
+      </div>
+    </div>
+  </body>
+</html>

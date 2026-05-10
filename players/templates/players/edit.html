@@ -1,0 +1,50 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>成績編集 - {{ pitcher.name }}</title>
+</head>
+<body>
+    <h1>{{ pitcher.name }} の成績編集</h1>
+    <a href="{% url 'pitcher_list' %}">← 一覧へ戻る</a>
+
+    <hr>
+    <h3>📊 防御率計算シミュレーター</h3>
+    <p>計算した結果を下のフォームに自動反映できます</p>
+    投球回: <input type="number" id="calc_ip" step="0.1"> 
+    自責点: <input type="number" id="calc_er"> 
+    <button type="button" onclick="syncCalc()">計算してフォームに反映</button>
+    <p>計算結果 ERA: <span id="calc_result">--</span></p>
+
+    <hr>
+    <form method="POST">
+        {% csrf_token %}
+        <p>投手名: <input type="text" name="name" value="{{ pitcher.name }}"></p>
+        <p>球団: 
+            <select name="team">
+                {% for val, label in teams %}
+                <option value="{{ val }}" {% if pitcher.team == val %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+        </p>
+        <p>投球回: <input type="number" step="0.1" name="innings_pitched" id="id_ip" value="{{ pitcher.innings_pitched }}"></p>
+        <p>自責点: <input type="number" name="earned_runs" id="id_er" value="{{ pitcher.earned_runs }}"></p>
+        <p>セーブ数: <input type="number" name="saves" value="{{ pitcher.saves }}"></p>
+        <button type="submit">保存する</button>
+    </form>
+
+    <script>
+        function syncCalc() {
+            const ip = document.getElementById('calc_ip').value;
+            const er = document.getElementById('calc_er').value;
+            if (ip > 0) {
+                const era = (er * 9) / ip;
+                document.getElementById('calc_result').innerText = era.toFixed(2);
+                // フォーム本体にも反映
+                document.getElementById('id_ip').value = ip;
+                document.getElementById('id_er').value = er;
+            }
+        }
+    </script>
+</body>
+</html>

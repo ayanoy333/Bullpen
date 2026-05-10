@@ -1,0 +1,223 @@
+{% load static %}
+<!doctype html>
+<html>
+  <head>
+    <link rel="stylesheet" href="{% static 'players/css/style.css' %}" />
+    <title>ピッチャー一覧・登録</title>
+    <style>
+      /* イニング調整ボタンのスタイル */
+      .inning-ctrl {
+        display: inline-flex;
+        align-items: center;
+        background: #eee;
+        border-radius: 6px;
+        padding: 2px;
+        border: 1px solid #ddd;
+        vertical-align: middle;
+      }
+      .btn-step {
+        background: var(--main-color);
+        color: white;
+        border: none;
+        width: 24px;
+        height: 24px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: bold;
+        line-height: 1;
+      }
+      .btn-step:hover {
+        background: #001d3d;
+      }
+
+      /* 並べ替えボタンの個別スタイル */
+      .sort-btn {
+        background-color: #e0e0e0;
+        color: #333 !important;
+        padding: 5px 15px;
+        font-size: 0.85em;
+        margin: 0 2px;
+        border: 1px solid #ccc;
+      }
+      .sort-btn:hover {
+        background-color: var(--accent-color);
+        border-color: var(--main-color);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="nav-right">
+      <form action="{% url 'logout' %}" method="post" style="display: inline">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">ログアウト</button>
+      </form>
+    </div>
+
+    <h1>ピッチャー一覧・登録</h1>
+
+    <a
+      href="{% url 'home' %}"
+      class="btn"
+      style="background-color: #666; margin-bottom: 20px"
+      >← ホームへ戻る</a
+    >
+
+    <div class="form-section">
+      <h3>✨ 新規登録</h3>
+      <form method="POST">
+        {% csrf_token %}
+        <input type="text" name="name" placeholder="投手名" required />
+
+        <select name="team">
+          <option value="">球団を選択</option>
+          {% for val, label in teams %}
+          <option value="{{ val }}">{{ label }}</option>
+          {% endfor %}
+        </select>
+
+        <div class="inning-ctrl">
+          <button type="button" class="btn-step" onclick="stepInning(-0.1)">
+            -
+          </button>
+          <input
+            type="number"
+            step="0.1"
+            name="innings_pitched"
+            id="ip_input"
+            value="0.0"
+            readonly
+            style="
+              width: 50px;
+              text-align: center;
+              border: none;
+              background: transparent;
+              font-weight: bold;
+              margin: 0 5px;
+            "
+          />
+          <button type="button" class="btn-step" onclick="stepInning(0.1)">
+            +
+          </button>
+        </div>
+
+        <input
+          type="number"
+          step="0.01"
+          name="input_era"
+          placeholder="防御率"
+          style="width: 80px"
+        />
+        <input type="number" name="wins" placeholder="勝" style="width: 50px" />
+        <input
+          type="number"
+          name="losses"
+          placeholder="負"
+          style="width: 50px"
+        />
+        <input type="number" name="holds" placeholder="H" style="width: 50px" />
+        <input type="number" name="saves" placeholder="S" style="width: 50px" />
+
+        <button
+          type="submit"
+          class="btn"
+          style="
+            background-color: var(--accent-color);
+            color: var(--main-color) !important;
+            font-weight: bold;
+          "
+        >
+          登録する
+        </button>
+      </form>
+    </div>
+
+    <div class="sort-section" style="margin-bottom: 20px">
+      <strong>並べ替え:</strong>
+      <a href="?sort=name" class="btn sort-btn">名前順</a>
+      <a href="?sort=team" class="btn sort-btn">球団順</a>
+      <a href="?sort=era" class="btn sort-btn">防御率順</a>
+      <a href="?sort=-saves" class="btn sort-btn">セーブ順</a> 
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 40px">★</th>
+          <th>投手名</th>
+          <th>球団</th>
+          <th>投球回</th>
+          <th>勝</th>
+          <th>負</th>
+          <th>防御率</th>
+          <th>H</th>
+          <th>S</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for pitcher in pitchers %}
+        <tr>
+          <td>
+            <a
+              href="{% url 'toggle_favorite' pitcher.pk %}"
+              style="text-decoration: none; font-size: 1.2rem"
+            >
+              {% if pitcher.is_favorite %}⭐{% else %}☆{% endif %}
+            </a>
+          </td>
+          <td>{{ pitcher.name }}</td>
+          <td>{{ pitcher.get_team_display }}</td>
+          <td>{{ pitcher.innings_pitched }}</td>
+          <td>{{ pitcher.wins }}</td>
+          <td>{{ pitcher.losses }}</td>
+          <td><strong>{{ pitcher.era }}</strong></td>
+          <td>{{ pitcher.holds }}</td>
+          <td>{{ pitcher.saves }}</td>
+          <td>
+            <a
+              href="{% url 'pitcher_edit' pitcher.pk %}"
+              class="btn"
+              style="padding: 5px 10px; font-size: 0.8em"
+              >編集</a
+            >
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <script>
+      /**
+       * 野球用イニング加減算ロジック (3アウトで繰り上げ)
+       */
+      function stepInning(delta) {
+        const input = document.getElementById("ip_input");
+        let current = parseFloat(input.value);
+
+        let innings = Math.floor(current);
+        let outs = Math.round((current - innings) * 10);
+
+        if (delta > 0) {
+          // プラスボタン
+          outs++;
+          if (outs >= 3) {
+            innings++;
+            outs = 0;
+          }
+        } else {
+          // マイナスボタン
+          outs--;
+          if (outs < 0) {
+            if (innings > 0) {
+              innings--;
+              outs = 2;
+            } else {
+              outs = 0;
+            }
+          }
+        }
+        input.value = (innings + outs * 0.1).toFixed(1);
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,160 @@
+/* players/static/players/css/style.css */
+:root {
+    --main-color: #003566;
+    --accent-color: #ffc300;
+    --bg-color: #f4f7f6;
+    --text-color: #333;
+    --white: #ffffff;
+}
+
+body {
+    font-family: 'Helvetica Neue', Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    margin: 0;
+    padding: 20px;
+    line-height: 1.6;
+}
+
+h1 {
+    color: var(--main-color);
+    border-bottom: 3px solid var(--accent-color);
+    padding-bottom: 10px;
+    margin-bottom: 30px;
+}
+
+/* ナビゲーション・ボタン */
+nav ul { padding: 0; list-style: none; display: flex; gap: 20px; }
+.btn {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: var(--main-color);
+    color: white !important;
+    text-decoration: none;
+    border-radius: 8px;
+    transition: 0.3s;
+    border: none;
+    cursor: pointer;
+}
+.btn:hover { background-color: #001d3d; transform: translateY(-2px); }
+
+/* カード形式のボックス */
+.card {
+    background: var(--white);
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    margin-bottom: 30px;
+}
+
+/* テーブルスタイル */
+table {
+    width: 100%;
+    background: var(--white);
+    border-collapse: collapse;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+th { background-color: var(--main-color); color: white; padding: 15px; }
+td { padding: 12px; border-bottom: 1px solid #eee; text-align: center; }
+
+/* フォーム入力 */
+input, select {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    margin-bottom: 10px;
+}
+
+/* --- ホーム画面専用のスタイル --- */
+.home-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start; 
+    min-height: 100vh;           
+    text-align: center;
+    padding-top: 10px;           
+}
+
+.hero-title {
+    font-size: 3.5rem;
+    margin-top: 0;               
+    margin-bottom: 15px;
+    letter-spacing: 4px;         
+    color: var(--main-color);
+}
+
+.menu-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    margin-top: 40px;
+    width: 100%;
+    max-width: 600px;
+}
+
+.menu-card {
+    background: white;
+    padding: 40px 20px;
+    border-radius: 15px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    text-decoration: none;
+    color: var(--main-color);
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.menu-card:hover {
+    transform: translateY(-10px);
+    border-color: var(--accent-color);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+}
+
+.menu-card i {
+    display: block;
+    font-size: 2.5rem;
+    margin-bottom: 15px;
+    font-style: normal; /* 絵文字が斜めにならないように */
+}
+
+.menu-card span {
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+.btn-danger {
+    background-color: #d90429;
+    color: white !important;
+}
+.btn-danger:hover {
+    background-color: #a4133c;
+}
+.nav-right {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+}
+
+.sort-btn {
+    background-color: #e0e0e0;
+    color: #333 !important;
+    padding: 5px 12px;
+    font-size: 0.9em;
+    margin: 0 2px;
+}
+.sort-btn:hover {
+    background-color: var(--accent-color);
+}
+
+.btn-small {
+    background: #666;
+    color: white;
+    border: none;
+    padding: 2px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.8em;
+}
+.btn-small:hover { background: #333; }
